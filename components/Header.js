@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
 const Header = props => {
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>{props.title}</Text>
+      <Image source={require('../logo.png')} style={{ width: 120, height: 120 }}></Image>
     </View>
   )
 };
@@ -12,16 +12,12 @@ const Header = props => {
 const styles = StyleSheet.create({
   header: {
     width: '100%',
-    height: 90,
-    paddingTop: 36,
-    backgroundColor: '#f7287b',
+    height: 70,
+    paddingTop: 20,
+    backgroundColor: '#FFD700',
     alignItems: 'center',
     justifyContent: 'center'
   },
-  title: {
-    color: 'black',
-    fontSize: 20
-  }
 });
 
 export default Header;

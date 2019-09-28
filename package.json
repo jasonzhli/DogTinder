@@ -8,11 +8,20 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "aws-amplify": "^1.1.40",
+    "aws-amplify-react-native": "^2.1.19",
     "expo": "^35.0.0",
+    "expo-google-app-auth": "^7.0.0",
+    "firebase": "^7.0.0",
     "react": "16.8.3",
     "react-dom": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
-    "react-native-web": "^0.11.7"
+    "react-native-gesture-handler": "^1.4.1",
+    "react-native-web": "^0.11.7",
+    "react-navigation": "^3.13.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^7.0.0"
