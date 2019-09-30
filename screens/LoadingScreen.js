@@ -6,7 +6,7 @@ const LoadingScreen = (props) => {
   const checkIfLoggedIn = () => {
     firebase.auth().onAuthStateChanged((user)=>{
       if (user){
-        props.navigation.navigate('DashboardScreen');
+        props.navigation.navigate('DoggosScreen');
       }
       else {
         props.navigation.navigate('LoginScreen');
