@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import firebase from 'firebase';
+import UserScreen from './UserScreen';
 
 const DoggosScreen = (props) => {
   return (
     <View style={styles.container}>
-      <Text>DoggosScreen</Text>
+      <UserScreen />
     </View>
   );
 };

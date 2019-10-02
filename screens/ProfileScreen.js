@@ -1,32 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { Animated, View, Text, StyleSheet, Image, Dimensions, Button, ScrollView, ActivityIndicator } from 'react-native';
 import firebase from 'firebase';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
-// import { Avatar } from 'react-native-elements';
 import { RNS3 } from 'react-native-aws3';
+import { Icon } from 'react-native-elements';
+
+const deviceWidth = Dimensions.get('window').width
 
 
 const ProfileScreen = (props) => {
-  // console.log(JSON.stringify(firebase.auth()));
-
-  const [image, setImage] = useState(null);
+  // console.log(JSON.stringify(firebase.database()));
+  
+  const [images, setImages] = useState(null);
 
   const userID = firebase.auth().currentUser.uid;
+
+  const animVal = new Animated.Value(0)
+
+  const updatePhotos = () => {
+    setImages(null);
+    var ref = firebase.database().ref('/users/' + userID + '/dog_pictures');
+    ref.on("value", function (snapshot) {
+      var array = [];
+      for (var key in snapshot.val()) {
+        array.push({ source: { uri: snapshot.val()[key] } });
+      }
+      setImages(array);
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+    });
+  }
 
   const upload = (uri, user) => {
     const file = {
       uri: uri,
-      name: "temp4.jpg",
+      name: `${JSON.stringify(Date.now())}.jpg`,
       type: "image/jpeg"
     };
     const options = {
       keyPrefix: `images/${user}/`,
       bucket: "dog-bucket-dt",
       region: "us-east-1",
-      accessKey: "AKIARGLCQX7FJLSJUIHH",
-      secretKey: "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",
+      accessKey: "AKIARGLCQX7FH42PZTGP",
+      secretKey: "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",
       successActionStatus: 201
     };
     return RNS3.put(file, options)
@@ -38,10 +56,7 @@ const ProfileScreen = (props) => {
           firebase
             .database()
             .ref('/users/' + userID + '/dog_pictures')
-            // .update({ dog_pictures: [response.body.postResponse.location]})
-            // .child("dog_pictures")
             .push(response.body.postResponse.location);
-          // a.setValue(response.body.postResponse.location)
           console.log(
             "Successfully uploaded image to s3. s3 bucket url: ",
             response.body.postResponse.location
@@ -52,9 +67,6 @@ const ProfileScreen = (props) => {
         console.log(error);
       });
   };
-  
-  // commentRef = pollRef.child("comments").push();
-  // commentRef.setValue(comment);
 
   const getPermissionAsync = async () => {
     if (Constants.platform.ios) {
@@ -64,10 +76,11 @@ const ProfileScreen = (props) => {
       }
     }
   }
-  
+ 
   useEffect(() => {
-    getPermissionAsync()
-  });
+    getPermissionAsync();
+    updatePhotos();
+  }, []);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -79,43 +92,98 @@ const ProfileScreen = (props) => {
     console.log(result);
 
     if (!result.cancelled) {
-      upload(result.uri, userID);
-      setImage(result.uri);
+      upload(result.uri, userID)
+        .then(() => updatePhotos());
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={{fontSize: 25, paddingBottom: 20}}>{firebase.auth().currentUser.displayName}
+      <View style={{ flexDirection: 'row', width: '90%', justifyContent: 'space-between'}} >
+        <Icon
+          raised
+          name='user'
+          type='font-awesome'
+          color='red'
+          size={'20'}
+          onPress={() => firebase.auth().signOut()}
+        />
+        <Text style={{fontSize: 30, justifyContent: 'center', alignItems: 'center'}}>{firebase.auth().currentUser.displayName}
+        </Text>
+        <View>
+          <Icon
+            raised
+            name='image'
+            type='font-awesome'
+            color='#517fa4'
+            size={'20'}
+            onPress = {pickImage}
+          />
+        </View>
+      </View>
+
+      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
+        <View>
+          <Text style={{paddingTop: 20}} >Matches{"\n"}</Text>
+          <Text style={styles.bigText}>{" "}9</Text>
+        </View>
+        <Image style={{ width: 100, height: 100, borderRadius: 50}}
+          rounded
+          source={{
+            uri:
+              firebase.auth().currentUser.photoURL,
+          }}
+        />
+        <View>
+          <Text style={{ paddingTop: 20 }} >Friends{"\n"}</Text>
+          <Text style={styles.bigText}>{" "}6</Text>
+        </View>
+      </View>
+      <Text style={{ fontSize: 20, fontWeight: 'bold', padding: 6, alignItems: 'flex-start'}}>Maximus, Age 2</Text>
+      <Text style={{ fontSize: 16, paddingBottom: 8, paddingLeft: 8, paddingRight: 8 }}>
+        My name is Max! I love to play outdoors and am extremely energetic.
+        I am looking for dog friends to play with. I get along with big dogs best!
       </Text>
-      <Image style={{ width: 100, height: 100, borderRadius: 50}}
-        rounded
-        source={{
-          uri:
-            firebase.auth().currentUser.photoURL,
-        }}
-      />
-      <Button
-        title="Pick an image from camera roll"
-        onPress={pickImage}
-      />
-      <Button
-        title="test"
-        onPress={() => console.log(image)}
-      />
-      {image &&
-        <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-      <Button title="Sign out" onPress={() => firebase.auth().signOut()} />
+
+      {images ? (<ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={10}
+        pagingEnabled
+        onScroll={
+          Animated.event(
+            [{ nativeEvent: { contentOffset: { x: animVal } } }]
+          )
+        }
+      >
+
+        {images.map((image, i)=> {
+          return (
+            <Image
+              key={`image${i}`}
+              source={{ uri: image.source.uri }}
+              style={{ width: deviceWidth }}
+            />
+          )
+        })}
+
+      </ScrollView>) : <ActivityIndicator/>}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 80,
+    paddingTop: 43,
     flex: 1,
     alignItems: 'center',
-    // justifyContent: 'center',
+  },
+  bigText: { 
+    fontSize: 40,
+    alignItems: 'center', 
+    justifyContent: 'center',
+    color: '#FF9800',
+    fontWeight: 'bold'
   },
 });
 

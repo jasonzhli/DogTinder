@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, {useState} from 'react';
+import { View, StyleSheet, Button, Image, ActivityIndicator} from 'react-native';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
+import Header from '../components/Header';
 
 
 const LoginScreen = props => {
@@ -93,12 +94,20 @@ const LoginScreen = props => {
   
   return (
     <View style={styles.container}>
-      <Button
-        title="Sign In With Google"
-        onPress = {() => {
-          signInWithGoogleAsync();
-        }}
-      />
+      <View style={styles.backgroundContainer}>
+        <Image style={styles.bakcgroundImage} source={require('../dog3.jpeg')} />
+      </View>
+      <View>
+        <Header />
+      </View>
+      <View style={styles.loginButton}>
+        <Button 
+         title="Sign In With Google"
+         onPress={() => {
+           signInWithGoogleAsync();
+         }}
+       />
+      </View>
     </View>
   );
 };
@@ -108,8 +117,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
+  backgroundContainer: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
+  bakcgroundImage: {
+    flex: 1,
+    width: null,
+    height: null
+  },
+  loginButton: {
+    paddingBottom: 300
+  }
 });
 
 export default LoginScreen;
