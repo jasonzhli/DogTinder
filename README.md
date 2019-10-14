@@ -4,10 +4,10 @@ Doggo Tinder
 A social media app for iOS and Android for dog owners to meet up with nearby dog users and create playdates for their best friends.
 video : bit.ly/doggotinder
 
-![Alt text](./README_pics/main_cover.png)
-![Alt text](./README_pics/cover_1.png)
-![Alt text](./README_pics/cover_2.png)
-![Alt text](./README_pics/cover_3.png)
+<img src="./README_pics/main_cover.png" width="24%">
+<img src="./README_pics/cover_1.png" width="24%">
+<img src="./README_pics/cover_2.png" width="24%">
+<img src="./README_pics/cover_3.png" width="24%">
 
 # Features
 
